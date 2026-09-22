@@ -2,7 +2,7 @@
 
 # root ban
 if [ "$EUID" -eq 0 ]; then
-    echo "error: you should launch script without root/sudo
+    echo "error: you should launch script without root/sudo"
     exit 1
 fi
 
@@ -100,43 +100,36 @@ done
 echo "aur helper install finished, moving to shell"
 
 sleep 1.5
-
 clear
+
 PS3="choose shell you want to install: "
 shell_options=("fish" "bash" "zsh" "skip")
 
 select shell_opt in "${shell_options[@]}"; do
-	case $shell_opt in
-		"fish")
-            fake_load "installing..."
-            # installig fish fish
-            sudo pacman -S fish
-            chsh -s /bin/fish
+	case "$shell_opt" in
+		"fish"|"zsh"|"bash")
+            fake_load "installing $shell_opt"
+            sudo pacman -S --needed --noconfirm "$shell_opt"
+
+            shell_path=$(which "$shell_opt")
+            if [ -n "$shell_path" ]; then
+                chsh -s "$shell_path"
+            fi
             break
             ;;
-           "zsh")
-            fake_load "installing zsh..."
-            # installing zsh
-            sudo pacman -S zsh
-            chsh -s /bin/zsh
-            break
-            ;;
-           "bash") 
-            fake_load "installing bash..."
-            # bash install
-            sudo pacman -S bash
-            chsh -s /bin/bash
-            break
-            ;;
-    	   "skip")
-            fake_load "skipping shell install."
+            "skip")
+            fake_load "skipping shell installer"
             break
             ;;
         *)
-		echo "write correct option"
+            echo "write correct option"
             ;;
-	esac
+    esac
 done
+
+sleep 1.5
+clear
+
 
 #echo "shell configuration ended do you"
 sleep 1.5
