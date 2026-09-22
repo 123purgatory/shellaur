@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# root ban
+if [ "$EUID" -eq 0 ]; then
+    echo "error: you should launch script without root/sudo
+    exit 1
+fi
+
 # animation
 fake_load() {
     local text="$1"
@@ -97,7 +103,7 @@ sleep 1.5
 
 clear
 PS3="choose shell you want to install: "
-shell_options=("fish" "zsh" "skip")
+shell_options=("fish" "bash" "zsh" "skip")
 
 select shell_opt in "${shell_options[@]}"; do
 	case $shell_opt in
@@ -113,6 +119,13 @@ select shell_opt in "${shell_options[@]}"; do
             # installing zsh
             sudo pacman -S zsh
             chsh -s /bin/zsh
+            break
+            ;;
+           "bash") 
+            fake_load "installing bash..."
+            # bash install
+            sudo pacman -S bash
+            chsh -s /bin/bash
             break
             ;;
     	   "skip")
